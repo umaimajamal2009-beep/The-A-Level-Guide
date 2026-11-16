@@ -1,0 +1,2435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>The A-Levels Guide</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-void: #040307;
+      --bg-surface: rgba(20, 14, 32, 0.45);
+      --bg-surface-hover: rgba(34, 22, 56, 0.58);
+      --bg-input: rgba(11, 8, 18, 0.88);
+      --neon: #a855f7;
+      --neon-bright: #d8b4fe;
+      --neon-vivid: #9333ea;
+      --neon-glow: rgba(168, 85, 247, 0.48);
+      --border-hairline: rgba(192, 132, 252, 0.14);
+      --border-strong: rgba(192, 132, 252, 0.28);
+      --border-neon: rgba(168, 85, 247, 0.6);
+      --text-main: #faf5ff;
+      --text-dim: #a19bb0;
+      --text-faint: #675e78;
+      --success: #34d399;
+      --danger: #fb7185;
+      --radius-xl: 22px;
+      --radius-lg: 15px;
+      --radius-md: 11px;
+      --radius-pill: 9999px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      min-height: 100vh;
+      background-color: var(--bg-void);
+      color: var(--text-main);
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      line-height: 1.5;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Ambient lighting, dual neon orbs & precision architectural grid */
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 65% 50% at 50% -8%, rgba(168, 85, 247, 0.28) 0%, rgba(126, 34, 206, 0.08) 48%, transparent 78%),
+        radial-gradient(circle 480px at 85% 85%, rgba(147, 51, 234, 0.14) 0%, transparent 70%),
+        radial-gradient(circle 420px at 12% 72%, rgba(192, 132, 252, 0.1) 0%, transparent 70%),
+        linear-gradient(to right, rgba(192, 132, 252, 0.025) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(192, 132, 252, 0.025) 1px, transparent 1px);
+      background-size: 100% 100%, 100% 100%, 100% 100%, 44px 44px, 44px 44px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    @keyframes pulseAura {
+      0%, 100% { opacity: 0.7; transform: translate(-50%, -50%) scale(1); }
+      50% { opacity: 1; transform: translate(-50%, -50%) scale(1.07); }
+    }
+
+    @keyframes floatSlow {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-6px); }
+    }
+
+    .mono { font-family: 'JetBrains Mono', monospace; }
+    .hidden { display: none !important; }
+
+    ::-webkit-scrollbar { width: 5px; height: 5px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(168, 85, 247, 0.35); border-radius: 999px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--neon); }
+
+    .glass {
+      background: linear-gradient(160deg, rgba(28, 19, 44, 0.55) 0%, rgba(13, 10, 20, 0.72) 100%);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border: 1px solid var(--border-hairline);
+      border-radius: var(--radius-xl);
+      box-shadow: 0 28px 65px rgba(0, 0, 0, 0.78), inset 0 1px 0 rgba(216, 180, 254, 0.12);
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-family: inherit;
+      font-weight: 600;
+      font-size: 0.84rem;
+      border-radius: var(--radius-pill);
+      cursor: pointer;
+      transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+      border: 1px solid transparent;
+      user-select: none;
+      white-space: nowrap;
+    }
+
+    .btn-neon {
+      background: linear-gradient(135deg, #d8b4fe 0%, #a855f7 45%, #7e22ce 100%);
+      color: #ffffff;
+      border-color: rgba(233, 213, 255, 0.45);
+      box-shadow: 0 0 0 1px rgba(168, 85, 247, 0.5), 0 10px 35px rgba(168, 85, 247, 0.55), inset 0 1px 1px rgba(255, 255, 255, 0.4);
+      text-shadow: 0 1px 8px rgba(0, 0, 0, 0.35);
+    }
+
+    .btn-neon:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 0 0 1px rgba(216, 180, 254, 0.85), 0 16px 48px rgba(168, 85, 247, 0.75), inset 0 1px 1px rgba(255, 255, 255, 0.55);
+      filter: brightness(1.08);
+    }
+
+    .btn-glass {
+      background: rgba(168, 85, 247, 0.06);
+      color: var(--text-main);
+      border-color: var(--border-hairline);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+    }
+
+    .btn-glass:hover {
+      border-color: var(--border-neon);
+      background: rgba(168, 85, 247, 0.16);
+      color: var(--neon-bright);
+      box-shadow: 0 0 20px rgba(168, 85, 247, 0.25);
+    }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--text-dim);
+      border-color: transparent;
+    }
+
+    .btn-ghost:hover {
+      color: var(--text-main);
+      background: rgba(168, 85, 247, 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      min-height: 100vh;
+      background-color: var(--bg-void);
+      color: var(--text-main);
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      line-height: 1.5;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Ambient lighting & subtle grid */
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 70% 45% at 50% -10%, rgba(168, 85, 247, 0.16) 0%, rgba(126, 34, 206, 0.03) 55%, transparent 80%),
+        linear-gradient(to right, rgba(255, 255, 255, 0.012) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255, 255, 255, 0.012) 1px, transparent 1px);
+      background-size: 100% 100%, 48px 48px, 48px 48px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .mono { font-family: 'JetBrains Mono', monospace; }
+    .hidden { display: none !important; }
+
+    ::-webkit-scrollbar { width: 5px; height: 5px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(168, 85, 247, 0.25); border-radius: 999px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--neon); }
+
+    .glass {
+      background: var(--bg-surface);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid var(--border-hairline);
+      border-radius: var(--radius-xl);
+      box-shadow: 0 30px 70px rgba(0, 0, 0, 0.7);
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-family: inherit;
+      font-weight: 600;
+      font-size: 0.84rem;
+      border-radius: var(--radius-pill);
+      cursor: pointer;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      border: 1px solid transparent;
+      user-select: none;
+      white-space: nowrap;
+    }
+
+    .btn-neon {
+      background: linear-gradient(135deg, #c084fc 0%, #9333ea 100%);
+      color: #ffffff;
+      border-color: rgba(255, 255, 255, 0.25);
+      box-shadow: 0 0 0 1px rgba(168, 85, 247, 0.4), 0 8px 30px rgba(168, 85, 247, 0.45);
+    }
+
+    .btn-neon:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 0 0 1px rgba(192, 132, 252, 0.7), 0 12px 40px rgba(168, 85, 247, 0.65);
+      filter: brightness(1.08);
+    }
+
+    .btn-glass {
+      background: rgba(255, 255, 255, 0.03);
+      color: var(--text-main);
+      border-color: var(--border-hairline);
+    }
+
+    .btn-glass:hover {
+      border-color: var(--border-neon);
+      background: rgba(168, 85, 247, 0.1);
+      color: var(--neon-bright);
+    }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--text-dim);
+      border-color: transparent;
+    }
+
+    .btn-ghost:hover {
+      color: var(--text-main);
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .field {
+      width: 100%;
+      background: var(--bg-input);
+      border: 1px solid var(--border-hairline);
+      border-radius: var(--radius-md);
+      color: var(--text-main);
+      padding: 11px 15px;
+      font-size: 0.88rem;
+      font-family: inherit;
+      transition: border-color 0.18s, box-shadow 0.18s;
+    }
+
+    .field::placeholder { color: var(--text-faint); }
+    .field:focus {
+      outline: none;
+      border-color: var(--neon);
+      box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.16);
+    }
+
+    input[type="date"] { color-scheme: dark; }
+
+    .chk {
+      appearance: none;
+      -webkit-appearance: none;
+      width: 17px;
+      height: 17px;
+      border-radius: 5px;
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      background: rgba(10, 10, 14, 0.9);
+      cursor: pointer;
+      display: inline-grid;
+      place-content: center;
+      transition: all 0.15s ease;
+      flex-shrink: 0;
+    }
+
+    .chk:hover {
+      border-color: var(--neon-bright);
+      box-shadow: 0 0 10px rgba(168, 85, 247, 0.35);
+    }
+
+    .chk:checked {
+      background: var(--neon);
+      border-color: var(--neon-bright);
+      box-shadow: 0 0 14px rgba(168, 85, 247, 0.6);
+    }
+
+    .chk:checked::before {
+      content: "";
+      width: 10px;
+      height: 10px;
+      background-color: #ffffff;
+      clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%);
+    }
+
+    /* Floating Toast */
+    #toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      z-index: 100;
+      background: rgba(12, 12, 18, 0.95);
+      backdrop-filter: blur(14px);
+      border: 1px solid var(--border-neon);
+      color: var(--neon-bright);
+      padding: 8px 18px;
+      border-radius: var(--radius-pill);
+      font-size: 0.78rem;
+      box-shadow: 0 0 25px rgba(168, 85, 247, 0.35);
+      opacity: 0;
+      transform: translateY(8px);
+      pointer-events: none;
+      transition: all 0.2s ease;
+    }
+    #toast.show { opacity: 1; transform: translateY(0); }
+
+    /* =========================================================
+       PAGE 1 & 2: LANDING & AUTH
+       ========================================================= */
+    #page-landing {
+      position: relative;
+      z-index: 1;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 24px;
+    }
+
+    #page-auth {
+      position: relative;
+      z-index: 1;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      padding: 24px;
+    }
+
+    .landing-header {
+      max-width: 1200px;
+      width: 100%;
+      margin: 0 auto;
+      height: 70px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      font-weight: 700;
+      font-size: 1.04rem;
+      color: #ffffff;
+      letter-spacing: -0.02em;
+    }
+
+    .brand-gem {
+      width: 28px;
+      height: 28px;
+      border-radius: 9px;
+      background: linear-gradient(135deg, rgba(192, 132, 252, 0.32), rgba(126, 34, 206, 0.22));
+      border: 1px solid var(--border-neon);
+      color: var(--neon-bright);
+      display: grid;
+      place-items: center;
+      font-size: 0.82rem;
+      font-weight: 700;
+      box-shadow: 0 0 18px rgba(168, 85, 247, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+    }
+
+    .hero-center {
+      position: relative;
+      max-width: 860px;
+      width: 100%;
+      margin: auto;
+      text-align: center;
+      padding: 48px 16px;
+    }
+
+    .hero-aura {
+      position: absolute;
+      top: 46%;
+      left: 50%;
+      width: 560px;
+      height: 300px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(168, 85, 247, 0.34) 0%, rgba(126, 34, 206, 0.12) 45%, transparent 72%);
+      filter: blur(42px);
+      pointer-events: none;
+      z-index: -1;
+      animation: pulseAura 6s ease-in-out infinite;
+    }
+
+    .hero-kicker {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 16px;
+      border-radius: var(--radius-pill);
+      background: rgba(168, 85, 247, 0.12);
+      border: 1px solid rgba(192, 132, 252, 0.38);
+      color: var(--neon-bright);
+      font-size: 0.74rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 24px;
+      box-shadow: 0 0 24px rgba(168, 85, 247, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+      animation: floatSlow 4.5s ease-in-out infinite;
+    }
+
+    .kicker-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #d8b4fe;
+      box-shadow: 0 0 10px #a855f7, 0 0 18px #a855f7;
+    }
+
+    .hero-h1 {
+      font-size: clamp(3.1rem, 8.2vw, 5.7rem);
+      font-weight: 800;
+      letter-spacing: -0.045em;
+      line-height: 1.02;
+      background: linear-gradient(180deg, #ffffff 15%, #f3e8ff 52%, #c084fc 84%, #9333ea 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      filter: drop-shadow(0 0 38px rgba(168, 85, 247, 0.35));
+      margin-bottom: 18px;
+    }
+
+    .hero-sub {
+      font-size: clamp(1.15rem, 2.5vw, 1.42rem);
+      color: #cbbdd9;
+      font-weight: 400;
+      letter-spacing: -0.01em;
+      margin-bottom: 40px;
+    }
+
+    .hero-actions {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    .brand-gem {
+      width: 26px;
+      height: 26px;
+      border-radius: 8px;
+      background: rgba(168, 85, 247, 0.18);
+      border: 1px solid var(--border-neon);
+      color: var(--neon-bright);
+      display: grid;
+      place-items: center;
+      font-size: 0.8rem;
+    }
+
+    .hero-center {
+      max-width: 820px;
+      width: 100%;
+      margin: auto;
+      text-align: center;
+      padding: 40px 16px;
+    }
+
+    .hero-h1 {
+      font-size: clamp(2.8rem, 7.5vw, 5.2rem);
+      font-weight: 800;
+      letter-spacing: -0.04em;
+      line-height: 1.05;
+      background: linear-gradient(180deg, #ffffff 20%, #e9d5ff 70%, #a855f7 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 16px;
+    }
+
+    .hero-sub {
+      font-size: clamp(1.1rem, 2.4vw, 1.35rem);
+      color: var(--text-dim);
+      font-weight: 400;
+      margin-bottom: 36px;
+    }
+
+    .auth-card-wrap {
+      max-width: 680px;
+      width: 100%;
+      margin: 28px auto 64px;
+    }
+
+    .auth-panel { padding: 32px; }
+
+    .auth-welcome-banner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 22px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--border-hairline);
+    }
+
+    .auth-status-tag {
+      font-size: 0.75rem;
+      color: var(--neon-bright);
+      background: rgba(168, 85, 247, 0.12);
+      border: 1px solid rgba(168, 85, 247, 0.3);
+      padding: 3px 10px;
+      border-radius: var(--radius-pill);
+    }
+
+    .cred-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+    @media (max-width: 600px) { .cred-grid { grid-template-columns: 1fr; } }
+
+    .picker-topbar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .search-input {
+      width: 210px;
+      padding: 7px 12px;
+      font-size: 0.8rem;
+      border-radius: var(--radius-pill);
+    }
+
+    .subject-filters {
+      display: flex;
+      gap: 6px;
+      overflow-x: auto;
+      padding-bottom: 8px;
+      margin-bottom: 12px;
+    }
+
+    .sub-filter-chip {
+      padding: 5px 12px;
+      border-radius: var(--radius-pill);
+      border: 1px solid var(--border-hairline);
+      background: transparent;
+      color: var(--text-dim);
+      font-size: 0.75rem;
+      font-weight: 500;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.15s;
+    }
+    .sub-filter-chip:hover { border-color: var(--border-strong); color: var(--text-main); }
+    .sub-filter-chip.active { background: rgba(168, 85, 247, 0.18); border-color: var(--border-neon); color: var(--neon-bright); }
+
+    .subjects-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 12px;
+      max-height: 380px;
+      overflow-y: auto;
+      padding-right: 4px;
+      margin-bottom: 22px;
+    }
+
+    .subj-card {
+      background: rgba(255, 255, 255, 0.015);
+      border: 1px solid var(--border-hairline);
+      border-radius: var(--radius-lg);
+      padding: 14px;
+    }
+
+    .subj-card-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-main);
+    }
+
+    .paper-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+
+    .p-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 11px;
+      border-radius: var(--radius-pill);
+      background: rgba(10, 10, 14, 0.8);
+      border: 1px solid var(--border-hairline);
+      color: var(--text-dim);
+      font-size: 0.76rem;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      user-select: none;
+    }
+    .p-chip:hover { border-color: var(--border-strong); color: var(--text-main); }
+    .p-chip.active {
+      background: rgba(168, 85, 247, 0.2);
+      border-color: var(--neon);
+      color: #ffffff;
+      box-shadow: 0 0 14px rgba(168, 85, 247, 0.28);
+    }
+
+    .auth-error {
+      padding: 10px 14px;
+      border-radius: var(--radius-md);
+      margin-bottom: 16px;
+      font-size: 0.82rem;
+      border: 1px solid rgba(251, 113, 133, 0.35);
+      background: rgba(251, 113, 133, 0.08);
+      color: #fecdd3;
+    }
+
+    /* =========================================================
+       PAGE 3: MAIN DASHBOARD
+       ========================================================= */
+    #page-dashboard {
+      position: relative;
+      z-index: 1;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 40;
+      min-height: 68px;
+      background: rgba(7, 5, 13, 0.8);
+      backdrop-filter: blur(22px);
+      border-bottom: 1px solid var(--border-hairline);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.55);
+      padding: 10px 24px;
+      display: flex;
+      align-items: center;
+    }
+
+    .topbar-inner {
+      width: 100%;
+      max-width: 1240px;
+      margin: 0 auto;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .nav-pills {
+      display: flex;
+      gap: 4px;
+      background: rgba(168, 85, 247, 0.05);
+      border: 1px solid var(--border-hairline);
+      padding: 4px;
+      border-radius: var(--radius-pill);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+    }
+
+    .nav-pill {
+      padding: 7px 18px;
+      border-radius: var(--radius-pill);
+      border: none;
+      background: transparent;
+      color: var(--text-dim);
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.18s;
+    }
+    .nav-pill:hover { color: #ffffff; }
+    .nav-pill.active {
+      background: linear-gradient(135deg, rgba(192, 132, 252, 0.25), rgba(147, 51, 234, 0.3));
+      color: #ffffff;
+      box-shadow: inset 0 0 0 1px var(--border-neon), 0 0 18px rgba(168, 85, 247, 0.28);
+    }
+
+    .topbar-right { display: flex; align-items: center; gap: 8px; }
+    .email-pill {
+      font-size: 0.75rem;
+      color: var(--neon-bright);
+      padding: 5px 13px;
+      border-radius: var(--radius-pill);
+      background: rgba(168, 85, 247, 0.08);
+      border: 1px solid var(--border-hairline);
+    }
+
+    .workspace {
+      max-width: 1240px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 32px 24px 80px;
+      flex: 1;
+    }
+
+    /* Executive Overview Strip on Main Page */
+    .overview-strip {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+      margin-bottom: 28px;
+    }
+    @media (max-width: 768px) { .overview-strip { grid-template-columns: 1fr; } }
+
+    .stat-tile {
+      padding: 18px 22px;
+      border-radius: var(--radius-lg);
+      background: linear-gradient(145deg, rgba(28, 19, 44, 0.52) 0%, rgba(12, 9, 19, 0.72) 100%);
+      border: 1px solid var(--border-hairline);
+      box-shadow: 0 14px 35px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(216, 180, 254, 0.1);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: border-color 0.2s, transform 0.2s;
+    }
+    .stat-tile:hover {
+      border-color: var(--border-neon);
+      transform: translateY(-2px);
+    }
+    .stat-label {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-dim);
+      margin-bottom: 4px;
+    }
+    .stat-val {
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: #ffffff;
+      letter-spacing: -0.02em;
+    }
+    .stat-val.neon-accent {
+      color: var(--neon-bright);
+      text-shadow: 0 0 20px rgba(168, 85, 247, 0.55);
+    }
+    .stat-icon-ring {
+      width: 38px;
+      height: 38px;
+      border-radius: 12px;
+      background: rgba(168, 85, 247, 0.14);
+      border: 1px solid rgba(192, 132, 252, 0.32);
+      color: var(--neon-bright);
+      display: grid;
+      place-items: center;
+      font-size: 0.85rem;
+      box-shadow: 0 0 16px rgba(168, 85, 247, 0.25);
+    }
+
+    .view-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      margin-bottom: 20px;
+    }
+    .view-title {
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: #ffffff;
+      letter-spacing: -0.02em;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .view-title::before {
+      content: "";
+      display: inline-block;
+      width: 4px;
+      height: 18px;
+      border-radius: 4px;
+      background: linear-gradient(180deg, #e9d5ff, #9333ea);
+      box-shadow: 0 0 12px var(--neon);
+    }
+
+    /* Timetable section */
+    .tt-list { display: flex; flex-direction: column; gap: 11px; }
+    .tt-row {
+      position: relative;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 18px 22px;
+      border-radius: var(--radius-lg);
+      transition: all 0.2s ease;
+    }
+    .tt-row:hover {
+      border-color: var(--border-neon);
+      background: var(--bg-surface-hover);
+      box-shadow: 0 12px 35px rgba(0, 0, 0, 0.6), 0 0 24px rgba(168, 85, 247, 0.14);
+    }
+
+    .topbar-inner {
+      width: 100%;
+      max-width: 1240px;
+      margin: 0 auto;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .nav-pills {
+      display: flex;
+      gap: 4px;
+      background: rgba(255, 255, 255, 0.025);
+      border: 1px solid var(--border-hairline);
+      padding: 4px;
+      border-radius: var(--radius-pill);
+    }
+
+    .nav-pill {
+      padding: 6px 16px;
+      border-radius: var(--radius-pill);
+      border: none;
+      background: transparent;
+      color: var(--text-dim);
+      font-size: 0.8rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.16s;
+    }
+    .nav-pill:hover { color: #ffffff; }
+    .nav-pill.active {
+      background: rgba(168, 85, 247, 0.22);
+      color: #ffffff;
+      box-shadow: inset 0 0 0 1px var(--border-neon);
+    }
+
+    .topbar-right { display: flex; align-items: center; gap: 8px; }
+    .email-pill {
+      font-size: 0.75rem;
+      color: var(--text-dim);
+      padding: 5px 12px;
+      border-radius: var(--radius-pill);
+      background: rgba(255, 255, 255, 0.025);
+      border: 1px solid var(--border-hairline);
+    }
+
+    .workspace {
+      max-width: 1240px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 32px 24px 80px;
+      flex: 1;
+    }
+
+    .view-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      margin-bottom: 20px;
+    }
+    .view-title { font-size: 1.25rem; font-weight: 700; color: #ffffff; }
+
+    /* Timetable section */
+    .tt-list { display: flex; flex-direction: column; gap: 10px; }
+    .tt-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 16px 20px;
+      border-radius: var(--radius-lg);
+      transition: border-color 0.18s, background 0.18s;
+    }
+    .tt-row:hover { border-color: var(--border-neon); background: var(--bg-surface-hover); }
+
+    .tt-info { display: flex; align-items: center; gap: 14px; min-width: 240px; }
+    .tt-code {
+      padding: 4px 10px;
+      border-radius: var(--radius-pill);
+      background: rgba(168, 85, 247, 0.12);
+      border: 1px solid rgba(168, 85, 247, 0.35);
+      color: var(--neon-bright);
+      font-size: 0.74rem;
+      font-weight: 600;
+    }
+    .tt-name { font-weight: 600; font-size: 0.94rem; color: #ffffff; }
+    .tt-sub { font-size: 0.76rem; color: var(--text-dim); }
+
+    .tt-controls { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
+    .date-group {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--bg-input);
+      border: 1px solid var(--border-hairline);
+      padding: 5px 10px;
+      border-radius: var(--radius-pill);
+    }
+    .date-select {
+      background: transparent;
+      border: none;
+      color: var(--text-main);
+      font-size: 0.78rem;
+      font-family: 'JetBrains Mono', monospace;
+      cursor: pointer;
+      outline: none;
+      padding: 2px 4px;
+    }
+    .date-select option {
+      background: #0d0a14;
+      color: #faf5ff;
+    }
+    .date-year-input {
+      width: 58px;
+      background: rgba(168, 85, 247, 0.08);
+      border: 1px solid var(--border-hairline);
+      border-radius: var(--radius-pill);
+      color: var(--neon-bright);
+      font-size: 0.78rem;
+      font-family: 'JetBrains Mono', monospace;
+      text-align: center;
+      padding: 2px 6px;
+      outline: none;
+    }
+    .date-year-input:focus {
+      border-color: var(--neon);
+    }
+    .date-clear-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-faint);
+      cursor: pointer;
+      font-size: 0.9rem;
+      padding: 0 4px;
+      line-height: 1;
+    }
+    .date-clear-btn:hover {
+      color: var(--danger);
+    }
+
+    .cd-badge {
+      min-width: 156px;
+      text-align: center;
+      padding: 7px 14px;
+      border-radius: var(--radius-pill);
+      font-size: 0.76rem;
+      font-weight: 600;
+      background: rgba(168, 85, 247, 0.1);
+      border: 1px solid rgba(168, 85, 247, 0.32);
+      color: var(--neon-bright);
+    }
+    .cd-badge.urgent {
+      background: rgba(168, 85, 247, 0.22);
+      border-color: var(--neon);
+      color: #ffffff;
+      box-shadow: 0 0 16px rgba(168, 85, 247, 0.35);
+    }
+    .cd-badge.today {
+      background: rgba(52, 211, 153, 0.15);
+      border-color: rgba(52, 211, 153, 0.45);
+      color: #a7f3d0;
+    }
+    .cd-badge.done {
+      background: rgba(255, 255, 255, 0.02);
+      border-color: var(--border-hairline);
+      color: var(--text-faint);
+    }
+    .cd-badge.unset {
+      background: transparent;
+      border-color: var(--border-hairline);
+      color: var(--text-faint);
+      font-weight: 400;
+    }
+
+    /* Calendar Section */
+    .cal-grid-layout { display: grid; grid-template-columns: 1.2fr 1fr; gap: 20px; }
+    @media (max-width: 900px) { .cal-grid-layout { grid-template-columns: 1fr; } }
+
+    .cal-box { padding: 24px; }
+    .cal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+    .cal-month { font-weight: 600; font-size: 0.96rem; color: #ffffff; }
+
+    .cal-dow { display: grid; grid-template-columns: repeat(7, 1fr); text-align: center; font-size: 0.7rem; color: var(--text-faint); margin-bottom: 8px; }
+    .cal-cells { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
+
+    .cal-cell {
+      aspect-ratio: 1 / 0.88;
+      min-height: 46px;
+      border-radius: var(--radius-md);
+      background: rgba(255, 255, 255, 0.015);
+      border: 1px solid transparent;
+      color: var(--text-main);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 0.82rem;
+      font-weight: 500;
+      transition: all 0.15s;
+    }
+    .cal-cell:hover { background: rgba(255, 255, 255, 0.045); border-color: var(--border-hairline); }
+    .cal-cell.today { border-color: var(--border-neon); color: var(--neon-bright); }
+    .cal-cell.selected {
+      background: rgba(168, 85, 247, 0.22);
+      border-color: var(--neon);
+      color: #ffffff;
+      box-shadow: 0 0 16px rgba(168, 85, 247, 0.28);
+    }
+    .dot-ind { width: 5px; height: 5px; border-radius: 50%; background: var(--neon); margin-top: 3px; }
+    .dot-ind.complete { background: var(--success); }
+
+    .task-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+    .task-add-row { display: flex; gap: 8px; margin-bottom: 14px; }
+    .task-stack { display: flex; flex-direction: column; gap: 8px; max-height: 340px; overflow-y: auto; }
+
+    .t-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 10px 14px;
+      border-radius: var(--radius-md);
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--border-hairline);
+    }
+    .t-label { display: flex; align-items: center; gap: 12px; flex: 1; cursor: pointer; font-size: 0.86rem; }
+    .t-label span.done { text-decoration: line-through; color: var(--text-faint); }
+    .t-del { background: transparent; border: none; color: var(--text-faint); font-size: 1.1rem; cursor: pointer; padding: 2px 8px; }
+    .t-del:hover { color: var(--danger); }
+
+    /* Syllabus Checklist Section */
+    .paper-tabs-bar { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 12px; margin-bottom: 16px; }
+    .paper-tab {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px;
+      border-radius: var(--radius-pill);
+      border: 1px solid var(--border-hairline);
+      background: rgba(255, 255, 255, 0.02);
+      color: var(--text-dim);
+      font-size: 0.8rem;
+      font-weight: 500;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.15s;
+    }
+    .paper-tab.active {
+      background: rgba(168, 85, 247, 0.18);
+      border-color: var(--neon);
+      color: #ffffff;
+      box-shadow: 0 0 16px rgba(168, 85, 247, 0.25);
+    }
+    .tab-pct { font-size: 0.7rem; color: var(--neon-bright); background: rgba(168, 85, 247, 0.15); padding: 2px 7px; border-radius: var(--radius-pill); }
+
+    .syl-card { overflow: hidden; }
+    .syl-top {
+      padding: 18px 22px;
+      border-bottom: 1px solid var(--border-hairline);
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+    .prog-box { display: flex; align-items: center; gap: 12px; min-width: 200px; }
+    .prog-bar { flex: 1; height: 6px; border-radius: var(--radius-pill); background: rgba(255, 255, 255, 0.06); overflow: hidden; }
+    .prog-fill { height: 100%; background: linear-gradient(90deg, #9333ea, #d8b4fe); box-shadow: 0 0 12px rgba(168, 85, 247, 0.7); transition: width 0.25s ease; }
+
+    .tbl-wrap { width: 100%; overflow-x: auto; }
+    .syl-tbl { width: 100%; border-collapse: collapse; min-width: 960px; text-align: left; }
+    .syl-tbl th {
+      padding: 12px 16px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-dim);
+      background: rgba(255, 255, 255, 0.015);
+      border-bottom: 1px solid var(--border-hairline);
+    }
+    .syl-tbl td { padding: 11px 16px; border-bottom: 1px solid rgba(255, 255, 255, 0.04); font-size: 0.85rem; vertical-align: middle; }
+    .syl-tbl tr:hover td { background: rgba(168, 85, 247, 0.03); }
+    .c-center { text-align: center; }
+
+    .mini-input {
+      width: 100%;
+      background: rgba(10, 10, 14, 0.78);
+      border: 1px solid var(--border-hairline);
+      border-radius: 7px;
+      color: var(--text-main);
+      padding: 6px 10px;
+      font-size: 0.8rem;
+      font-family: inherit;
+    }
+    .mini-input:focus { outline: none; border-color: var(--neon); }
+
+    /* Modal for Managing Papers */
+    .modal-bg {
+      position: fixed;
+      inset: 0;
+      z-index: 60;
+      background: rgba(0, 0, 0, 0.82);
+      backdrop-filter: blur(10px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+    .modal-card { width: 100%; max-width: 760px; max-height: 88vh; display: flex; flex-direction: column; padding: 24px; }
+  </style>
+</head>
+<body>
+
+  <div id="toast" class="mono">Saved</div>
+
+  <!-- PAGE 1: CLEAN LANDING HERO -->
+  <section id="page-landing">
+    <header class="landing-header">
+      <div class="brand">
+        <div class="brand-gem mono">A</div>
+        <span>The A-Levels Guide</span>
+      </div>
+      <button id="btn-landing-login" type="button" class="btn btn-glass" style="padding: 8px 18px; font-size: 0.82rem;">
+        Log In
+      </button>
+    </header>
+
+    <div class="hero-center">
+      <div class="hero-aura"></div>
+      <h1 class="hero-h1">The A-Levels Guide</h1>
+      <p class="hero-sub">Ace your A-Levels.</p>
+      <div class="hero-actions">
+        <button id="btn-get-started" type="button" class="btn btn-neon" style="padding: 16px 42px; font-size: 1.02rem;">
+          Get Started &rarr;
+        </button>
+      </div>
+    </div>
+
+    <div style="height: 40px;"></div>
+  </section>
+
+  <!-- PAGE 2: ACCOUNT CREATION & LOG IN -->
+  <section id="page-auth" class="hidden">
+    <header class="landing-header">
+      <button id="btn-back-landing" type="button" class="brand" style="background:none; border:none; cursor:pointer;">
+        <div class="brand-gem mono">A</div>
+        <span>The A-Levels Guide</span>
+      </button>
+      <button id="btn-top-switch" type="button" class="btn btn-glass" style="padding: 6px 14px; font-size: 0.78rem;">
+        Log In
+      </button>
+    </header>
+
+    <div class="auth-card-wrap">
+      <div class="glass auth-panel">
+        <div class="auth-welcome-banner">
+          <div>
+            <div id="auth-title-mode" style="font-weight: 700; font-size: 1.05rem; color: #ffffff;">Create Your Account</div>
+            <div id="auth-subtitle-mode" style="font-size: 0.8rem; color: var(--text-dim); margin-top: 2px;">Enter details & choose your exact papers</div>
+          </div>
+          <span id="auth-status-badge" class="auth-status-tag mono">New Account</span>
+        </div>
+
+        <div id="auth-error-box" class="auth-error hidden"></div>
+
+        <form id="form-auth-main">
+          <!-- Credentials -->
+          <div class="cred-grid">
+            <input id="input-email" class="field" type="email" placeholder="Email address" required />
+            <input id="input-password" class="field" type="password" placeholder="Password (min 6 chars)" minlength="6" required />
+          </div>
+
+          <!-- Paper Selector Area (Visible for Sign Up / Editing) -->
+          <div id="paper-selector-section">
+            <div class="picker-topbar">
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <span class="mono" style="font-size: 0.75rem; color: var(--text-dim);">CHOOSE PAPERS</span>
+                <span id="signup-paper-counter" class="tt-code mono">0 selected</span>
+              </div>
+              <input id="input-search-papers" class="field search-input" type="text" placeholder="Filter subject or paper..." />
+            </div>
+
+            <div id="subject-filter-strip" class="subject-filters"></div>
+            <div id="signup-subjects-grid" class="subjects-grid"></div>
+          </div>
+
+          <button id="btn-auth-submit" type="submit" class="btn btn-neon" style="width: 100%; padding: 12px; margin-top: 6px;">
+            Get Started &rarr;
+          </button>
+        </form>
+
+        <div style="text-align: center; margin-top: 16px;">
+          <button id="btn-toggle-auth-mode" type="button" class="btn btn-ghost" style="font-size: 0.78rem;">
+            Already have an account? <span id="toggle-prompt-text" style="color: var(--neon-bright); margin-left: 4px; text-decoration: underline;">Log in</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PAGE 3: MAIN DASHBOARD -->
+  <section id="page-dashboard" class="hidden">
+    <header class="topbar">
+      <div class="topbar-inner">
+        <div class="brand">
+          <div class="brand-gem mono">A</div>
+          <span>The A-Levels Guide</span>
+        </div>
+
+        <nav class="nav-pills" aria-label="Sections">
+          <button type="button" class="nav-pill active" data-tab="timetable">Exam Timetable</button>
+          <button type="button" class="nav-pill" data-tab="calendar">Calendar & Tasks</button>
+          <button type="button" class="nav-pill" data-tab="syllabus">Syllabus Checklist</button>
+        </nav>
+
+        <div class="topbar-right">
+          <span id="dash-user-email" class="email-pill mono"></span>
+          <button id="btn-manage-papers" type="button" class="btn btn-glass" style="padding: 6px 12px; font-size: 0.76rem;">Papers</button>
+          <button id="btn-logout" type="button" class="btn btn-ghost" style="padding: 6px 10px; font-size: 0.76rem;">Log Out</button>
+        </div>
+      </div>
+    </header>
+
+    <main class="workspace">
+      <!-- SECTION 1: TIMETABLE & COUNTDOWNS -->
+      <section id="sec-timetable">
+        <div class="view-head">
+          <h2 class="view-title">Exam Timetable</h2>
+          <span id="tt-total-badge" class="mono" style="font-size: 0.78rem; color: var(--neon-bright);">0 papers</span>
+        </div>
+        <div id="timetable-rows" class="tt-list"></div>
+      </section>
+
+      <!-- SECTION 2: CALENDAR & TASKS -->
+      <section id="sec-calendar" class="hidden">
+        <div class="view-head">
+          <h2 class="view-title">Calendar & Task Planner</h2>
+          <button id="btn-cal-today" type="button" class="btn btn-glass" style="padding: 6px 14px; font-size: 0.76rem;">Today</button>
+        </div>
+
+        <div class="cal-grid-layout">
+          <div class="glass cal-box">
+            <div class="cal-header">
+              <button id="btn-cal-prev" type="button" class="btn btn-glass mono" style="padding: 5px 11px;">&lt;</button>
+              <span id="cal-month-label" class="cal-month">Month Year</span>
+              <button id="btn-cal-next" type="button" class="btn btn-glass mono" style="padding: 5px 11px;">&gt;</button>
+            </div>
+            <div class="cal-dow mono"><div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div></div>
+            <div id="cal-days-grid" class="cal-cells"></div>
+          </div>
+
+          <div class="glass cal-box">
+            <div class="task-head">
+              <div>
+                <div id="cal-selected-heading" style="font-weight: 600; font-size: 0.95rem; color: #ffffff;">Date</div>
+                <div id="cal-day-rel" class="mono" style="font-size: 0.7rem; color: var(--neon-bright); margin-top: 2px;">TODAY</div>
+              </div>
+              <span id="cal-day-stats" class="mono" style="font-size: 0.74rem; color: var(--text-dim);">0/0</span>
+            </div>
+
+            <form id="form-add-task" class="task-add-row">
+              <input id="input-new-task" class="field" type="text" placeholder="Add task for this day..." required />
+              <button type="submit" class="btn btn-neon" style="padding: 0 18px;">Add</button>
+            </form>
+
+            <div id="cal-tasks-list" class="task-stack"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 3: SYLLABUS CHECKLIST -->
+      <section id="sec-syllabus" class="hidden">
+        <div class="view-head">
+          <h2 class="view-title">CAIE Syllabus Checklist</h2>
+        </div>
+        <div id="syllabus-paper-tabs" class="paper-tabs-bar"></div>
+        <div id="syllabus-cards-container"></div>
+      </section>
+    </main>
+  </section>
+
+  <!-- MODAL: MANAGE PAPERS -->
+  <div id="modal-manage" class="modal-bg hidden">
+    <div class="glass modal-card">
+      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px;">
+        <h3 style="font-size: 1rem; font-weight: 700;">Manage Your A-Level Papers</h3>
+        <button id="btn-close-modal" type="button" class="btn btn-ghost mono" style="padding: 4px 10px;">&times;</button>
+      </div>
+      <div id="modal-subjects-grid" class="subjects-grid" style="max-height: 58vh; margin-bottom: 16px;"></div>
+      <div style="display: flex; justify-content: flex-end; gap: 10px;">
+        <button id="btn-cancel-modal" type="button" class="btn btn-ghost" style="padding: 8px 16px;">Cancel</button>
+        <button id="btn-save-modal" type="button" class="btn btn-neon" style="padding: 8px 20px;">Save Changes</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      "use strict";
+
+      /* =========================================================
+         1. COMPLETE CAIE 2027 SYLLABUS DATASET
+         ========================================================= */
+      var CAIE_SUBJECTS = [
+        {
+          code: "9709",
+          subject: "Mathematics",
+          papers: [
+            { id: "9709_p1", short: "P1", name: "Mathematics P1", subtitle: "Pure Mathematics 1", chapters: ["Quadratics", "Functions", "Coordinate geometry", "Circular measure", "Trigonometry", "Series", "Differentiation", "Integration"] },
+            { id: "9709_p2", short: "P2", name: "Mathematics P2", subtitle: "Pure Mathematics 2", chapters: ["Algebra", "Logarithmic and exponential functions", "Trigonometry", "Differentiation", "Integration", "Numerical solution of equations"] },
+            { id: "9709_p3", short: "P3", name: "Mathematics P3", subtitle: "Pure Mathematics 3", chapters: ["Algebra", "Logarithmic and exponential functions", "Trigonometry", "Differentiation", "Integration", "Numerical solution of equations", "Vectors", "Differential equations", "Complex numbers"] },
+            { id: "9709_m1", short: "M1", name: "Mathematics M1", subtitle: "Mechanics", chapters: ["Forces and equilibrium", "Kinematics of motion in a straight line", "Momentum", "Newton's laws of motion", "Energy, work and power"] },
+            { id: "9709_s1", short: "S1", name: "Mathematics S1", subtitle: "Probability & Statistics 1", chapters: ["Representation of data", "Permutations and combinations", "Probability", "Discrete random variables", "The normal distribution"] },
+            { id: "9709_s2", short: "S2", name: "Mathematics S2", subtitle: "Probability & Statistics 2", chapters: ["The Poisson distribution", "Linear combinations of random variables", "Continuous random variables", "Sampling and estimation", "Hypothesis tests"] }
+          ]
+        },
+        {
+          code: "9702",
+          subject: "Physics",
+          papers: [
+            { id: "9702_p1", short: "P1", name: "Physics P1", subtitle: "Multiple Choice (AS)", chapters: ["Physical quantities and units", "Kinematics", "Dynamics", "Forces, density and pressure", "Work, energy and power", "Deformation of solids", "Waves", "Superposition", "Electricity", "D.C. circuits", "Particle physics"] },
+            { id: "9702_p2", short: "P2", name: "Physics P2", subtitle: "AS Level Structured Questions", chapters: ["Physical quantities and units", "Kinematics", "Dynamics", "Forces, density and pressure", "Work, energy and power", "Deformation of solids", "Waves", "Superposition", "Electricity", "D.C. circuits", "Particle physics"] },
+            { id: "9702_p3", short: "P3", name: "Physics P3", subtitle: "Advanced Practical Skills", chapters: ["Manipulation, measurement and observation", "Presentation of data and observations", "Analysis, conclusions and evaluation"] },
+            { id: "9702_p4", short: "P4", name: "Physics P4", subtitle: "A Level Structured Questions", chapters: ["Motion in a circle", "Gravitational fields", "Temperature", "Ideal gases", "Thermodynamics", "Oscillations", "Electric fields", "Capacitance", "Magnetic fields", "Alternating currents", "Quantum physics", "Nuclear physics", "Medical physics", "Astronomy and cosmology"] },
+            { id: "9702_p5", short: "P5", name: "Physics P5", subtitle: "Planning, Analysis and Evaluation", chapters: ["Planning", "Analysis, conclusions and evaluation"] }
+          ]
+        },
+        {
+          code: "9701",
+          subject: "Chemistry",
+          papers: [
+            { id: "9701_p1", short: "P1", name: "Chemistry P1", subtitle: "Multiple Choice (AS)", chapters: ["Atomic structure", "Atoms, molecules and stoichiometry", "Chemical bonding", "States of matter", "Chemical energetics", "Electrochemistry", "Equilibria", "Reaction kinetics", "The Periodic Table: chemical periodicity", "Group 2", "Group 17", "Nitrogen and sulfur", "An introduction to AS Level organic chemistry", "Hydrocarbons", "Halogen compounds", "Hydroxy compounds", "Carbonyl compounds", "Carboxylic acids and derivatives", "Nitrogen compounds", "Polymerisation", "Organic synthesis", "Analytical techniques"] },
+            { id: "9701_p2", short: "P2", name: "Chemistry P2", subtitle: "AS Level Structured Questions", chapters: ["Atomic structure", "Atoms, molecules and stoichiometry", "Chemical bonding", "States of matter", "Chemical energetics", "Electrochemistry", "Equilibria", "Reaction kinetics", "The Periodic Table: chemical periodicity", "Group 2", "Group 17", "Nitrogen and sulfur", "An introduction to AS Level organic chemistry", "Hydrocarbons", "Halogen compounds", "Hydroxy compounds", "Carbonyl compounds", "Carboxylic acids and derivatives", "Nitrogen compounds", "Polymerisation", "Organic synthesis", "Analytical techniques"] },
+            { id: "9701_p3", short: "P3", name: "Chemistry P3", subtitle: "Advanced Practical Skills", chapters: ["Manipulation, measurement and observation", "Presentation of data and observations", "Analysis, conclusions and evaluation"] },
+            { id: "9701_p4", short: "P4", name: "Chemistry P4", subtitle: "A Level Structured Questions", chapters: ["Chemical energetics", "Electrochemistry", "Equilibria", "Reaction kinetics", "Group 2", "Chemistry of transition elements", "An introduction to A Level organic chemistry", "Hydrocarbons", "Halogen compounds", "Hydroxy compounds", "Carboxylic acids and derivatives", "Nitrogen compounds", "Polymerisation", "Organic synthesis", "Analytical techniques"] },
+            { id: "9701_p5", short: "P5", name: "Chemistry P5", subtitle: "Planning, Analysis and Evaluation", chapters: ["Planning", "Analysis, conclusions and evaluation"] }
+          ]
+        },
+        {
+          code: "9700",
+          subject: "Biology",
+          papers: [
+            { id: "9700_p1", short: "P1", name: "Biology P1", subtitle: "Multiple Choice (AS)", chapters: ["Cell structure", "Biological molecules", "Enzymes", "Cell membranes and transport", "The mitotic cell cycle", "Nucleic acids and protein synthesis", "Transport in plants", "Transport in mammals", "Gas exchange", "Infectious diseases", "Immunity"] },
+            { id: "9700_p2", short: "P2", name: "Biology P2", subtitle: "AS Level Structured Questions", chapters: ["Cell structure", "Biological molecules", "Enzymes", "Cell membranes and transport", "The mitotic cell cycle", "Nucleic acids and protein synthesis", "Transport in plants", "Transport in mammals", "Gas exchange", "Infectious diseases", "Immunity"] },
+            { id: "9700_p3", short: "P3", name: "Biology P3", subtitle: "Advanced Practical Skills", chapters: ["Manipulation, measurement and observation", "Presentation of data and observations", "Analysis, conclusions and evaluation"] },
+            { id: "9700_p4", short: "P4", name: "Biology P4", subtitle: "A Level Structured Questions", chapters: ["Energy and respiration", "Photosynthesis", "Homeostasis", "Control and coordination", "Inheritance", "Selection and evolution", "Classification, biodiversity and conservation", "Genetic technology"] },
+            { id: "9700_p5", short: "P5", name: "Biology P5", subtitle: "Planning, Analysis and Evaluation", chapters: ["Planning", "Analysis, conclusions and evaluation"] }
+          ]
+        },
+        {
+          code: "9618",
+          subject: "Computer Science",
+          papers: [
+            { id: "9618_p1", short: "P1", name: "Computer Science P1", subtitle: "Theory Fundamentals", chapters: ["Information representation", "Communication", "Hardware", "Processor Fundamentals", "System Software", "Security, privacy and data integrity", "Ethics and Ownership", "Databases"] },
+            { id: "9618_p2", short: "P2", name: "Computer Science P2", subtitle: "Fundamental Problem-solving and Programming Skills", chapters: ["Algorithm Design and Problem-solving", "Data Types and Structures", "Programming", "Software Development"] },
+            { id: "9618_p3", short: "P3", name: "Computer Science P3", subtitle: "Advanced Theory", chapters: ["Data Representation", "Communication and internet technologies", "Hardware and Virtual Machines", "System Software", "Security", "Artificial Intelligence (AI)"] },
+            { id: "9618_p4", short: "P4", name: "Computer Science P4", subtitle: "Practical", chapters: ["Computational thinking and Problem-solving", "Further Programming"] }
+          ]
+        },
+        {
+          code: "9708",
+          subject: "Economics",
+          papers: [
+            { id: "9708_p1", short: "P1", name: "Economics P1", subtitle: "AS Level Multiple Choice", chapters: ["Basic economic ideas and resource allocation", "The price system and the microeconomy", "Government microeconomic intervention", "The macroeconomy", "Government macroeconomic intervention", "International economic issues"] },
+            { id: "9708_p2", short: "P2", name: "Economics P2", subtitle: "AS Level Data Response and Essays", chapters: ["Basic economic ideas and resource allocation", "The price system and the microeconomy", "Government microeconomic intervention", "The macroeconomy", "Government macroeconomic intervention", "International economic issues"] },
+            { id: "9708_p3", short: "P3", name: "Economics P3", subtitle: "A Level Multiple Choice", chapters: ["The price system and the microeconomy", "Government microeconomic intervention", "The macroeconomy", "Government macroeconomic intervention", "International economic issues"] },
+            { id: "9708_p4", short: "P4", name: "Economics P4", subtitle: "A Level Data Response and Essays", chapters: ["The price system and the microeconomy", "Government microeconomic intervention", "The macroeconomy", "Government macroeconomic intervention", "International economic issues"] }
+          ]
+        },
+        {
+          code: "9609",
+          subject: "Business",
+          papers: [
+            { id: "9609_p1", short: "P1", name: "Business P1", subtitle: "Business Concepts 1", chapters: ["Business and its environment", "Human resource management", "Marketing", "Operations management", "Finance and accounting"] },
+            { id: "9609_p2", short: "P2", name: "Business P2", subtitle: "Business Concepts 2", chapters: ["Business and its environment", "Human resource management", "Marketing", "Operations management", "Finance and accounting"] },
+            { id: "9609_p3", short: "P3", name: "Business P3", subtitle: "Business Decision-Making", chapters: ["Business and its environment", "Human resource management", "Marketing", "Operations management", "Finance and accounting"] },
+            { id: "9609_p4", short: "P4", name: "Business P4", subtitle: "Business Strategy", chapters: ["Business and its environment", "Human resource management", "Marketing", "Operations management", "Finance and accounting"] }
+          ]
+        },
+        {
+          code: "9706",
+          subject: "Accounting",
+          papers: [
+            { id: "9706_p1", short: "P1", name: "Accounting P1", subtitle: "AS Level Multiple Choice", chapters: ["Financial accounting", "Cost and management accounting"] },
+            { id: "9706_p2", short: "P2", name: "Accounting P2", subtitle: "AS Level Fundamentals of Accounting", chapters: ["Financial accounting", "Cost and management accounting"] },
+            { id: "9706_p3", short: "P3", name: "Accounting P3", subtitle: "A Level Financial Accounting", chapters: ["Financial accounting"] },
+            { id: "9706_p4", short: "P4", name: "Accounting P4", subtitle: "A Level Cost and Management Accounting", chapters: ["Cost and management accounting"] }
+          ]
+        },
+        {
+          code: "9231",
+          subject: "Further Mathematics",
+          papers: [
+            { id: "9231_fp1", short: "FP1", name: "Further Maths FP1", subtitle: "Further Pure Mathematics 1", chapters: ["Roots of polynomial equations", "Rational functions and graphs", "Summation of series", "Matrices", "Polar coordinates", "Vectors", "Proof by induction"] },
+            { id: "9231_fp2", short: "FP2", name: "Further Maths FP2", subtitle: "Further Pure Mathematics 2", chapters: ["Hyperbolic functions", "Matrices", "Differentiation", "Integration", "Complex numbers", "Differential equations"] },
+            { id: "9231_fm", short: "FM", name: "Further Maths FM", subtitle: "Further Mechanics", chapters: ["Motion of a projectile", "Equilibrium of a rigid body", "Circular motion", "Hooke's law", "Linear motion under a variable force", "Momentum"] },
+            { id: "9231_fps", short: "FPS", name: "Further Maths FPS", subtitle: "Further Probability & Statistics", chapters: ["Continuous random variables", "Inference using normal and t-distributions", "Chi-squared tests", "Non-parametric tests", "Probability generating functions"] }
+          ]
+        }
+      ];
+
+      var PAPER_MAP = {};
+      CAIE_SUBJECTS.forEach(function (subj) {
+        subj.papers.forEach(function (p) {
+          PAPER_MAP[p.id] = {
+            id: p.id,
+            code: subj.code,
+            subject: subj.subject,
+            short: p.short,
+            name: p.name,
+            subtitle: p.subtitle,
+            chapters: p.chapters
+          };
+        });
+      });
+
+      /* =========================================================
+         2. SUPABASE CLIENT & USER STATE
+         ========================================================= */
+      var SUPABASE_URL = "https://anfvkqarnggykjtwwgxa.supabase.co";
+      var SUPABASE_KEY = "sb_publishable_U_Pc3mwFSs1VaCZwSo5dMg_Rmk4xmRm";
+      var sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+      var isLoginMode = false;
+      var signupSelectedPapers = {};
+      var activeFilterSubject = "ALL";
+      var searchFilterQuery = "";
+
+      var currentUser = null;
+      var activeSyllabusTab = null;
+      var countdownInterval = null;
+      var saveTimeout = null;
+
+      var todayDateObj = new Date();
+      var calView = {
+        year: todayDateObj.getFullYear(),
+        month: todayDateObj.getMonth(),
+        selectedDate: toISOString(todayDateObj)
+      };
+
+      function toISOString(d) {
+        var y = d.getFullYear();
+        var m = String(d.getMonth() + 1).padStart(2, "0");
+        var day = String(d.getDate()).padStart(2, "0");
+        return y + "-" + m + "-" + day;
+      }
+
+      function notify(msg) {
+        var el = document.getElementById("toast");
+        el.textContent = msg;
+        el.classList.add("show");
+        setTimeout(function () { el.classList.remove("show"); }, 1800);
+      }
+
+      /* =========================================================
+         3. SUBJECT FILTER CHIPS & PAPER GRID RENDERERS
+         ========================================================= */
+      function renderSubjectFilterChips() {
+        var strip = document.getElementById("subject-filter-strip");
+        if (!strip) return;
+        strip.innerHTML = "";
+
+        var allBtn = document.createElement("button");
+        allBtn.type = "button";
+        allBtn.className = "sub-filter-chip" + (activeFilterSubject === "ALL" ? " active" : "");
+        allBtn.textContent = "All Subjects";
+        allBtn.addEventListener("click", function () {
+          activeFilterSubject = "ALL";
+          renderSubjectFilterChips();
+          renderSignupPapersGrid();
+        });
+        strip.appendChild(allBtn);
+
+        CAIE_SUBJECTS.forEach(function (subj) {
+          var btn = document.createElement("button");
+          btn.type = "button";
+          btn.className = "sub-filter-chip" + (activeFilterSubject === subj.code ? " active" : "");
+          btn.textContent = subj.subject;
+          btn.addEventListener("click", function () {
+            activeFilterSubject = subj.code;
+            renderSubjectFilterChips();
+            renderSignupPapersGrid();
+          });
+          strip.appendChild(btn);
+        });
+      }
+
+      function updateSignupCounter() {
+        var count = Object.keys(signupSelectedPapers).length;
+        var el = document.getElementById("signup-paper-counter");
+        if (el) el.textContent = count + " selected";
+      }
+
+      function renderSignupPapersGrid() {
+        var grid = document.getElementById("signup-subjects-grid");
+        if (!grid) return;
+        grid.innerHTML = "";
+        var q = searchFilterQuery.trim().toLowerCase();
+
+        CAIE_SUBJECTS.forEach(function (subj) {
+          if (activeFilterSubject !== "ALL" && subj.code !== activeFilterSubject) return;
+
+          var subjMatches = subj.subject.toLowerCase().indexOf(q) !== -1 || subj.code.indexOf(q) !== -1;
+          var matchingPapers = subj.papers.filter(function (p) {
+            if (!q || subjMatches) return true;
+            return p.short.toLowerCase().indexOf(q) !== -1 || p.name.toLowerCase().indexOf(q) !== -1 || p.subtitle.toLowerCase().indexOf(q) !== -1;
+          });
+
+          if (matchingPapers.length === 0) return;
+
+          var card = document.createElement("div");
+          card.className = "subj-card";
+
+          var head = document.createElement("div");
+          head.className = "subj-card-head";
+          head.innerHTML = "<span>" + subj.subject + "</span><span class='tt-code mono'>" + subj.code + "</span>";
+          card.appendChild(head);
+
+          var chips = document.createElement("div");
+          chips.className = "paper-chips";
+
+          matchingPapers.forEach(function (paper) {
+            var isSel = !!signupSelectedPapers[paper.id];
+            var chip = document.createElement("button");
+            chip.type = "button";
+            chip.className = "p-chip" + (isSel ? " active" : "");
+            chip.innerHTML = "<strong class='mono' style='color:#fff;'>" + paper.short + "</strong><span>" + paper.subtitle + "</span>";
+
+            chip.addEventListener("click", function () {
+              if (signupSelectedPapers[paper.id]) {
+                delete signupSelectedPapers[paper.id];
+                chip.classList.remove("active");
+              } else {
+                signupSelectedPapers[paper.id] = true;
+                chip.classList.add("active");
+              }
+              updateSignupCounter();
+            });
+            chips.appendChild(chip);
+          });
+
+          card.appendChild(chips);
+          grid.appendChild(card);
+        });
+        updateSignupCounter();
+      }
+
+      document.getElementById("input-search-papers").addEventListener("input", function (e) {
+        searchFilterQuery = e.target.value;
+        renderSignupPapersGrid();
+      });
+
+      /* =========================================================
+         4. UI ROUTING & INITIALIZATION
+         ========================================================= */
+      function showView(name) {
+        document.getElementById("page-landing").classList.add("hidden");
+        document.getElementById("page-auth").classList.add("hidden");
+        document.getElementById("page-dashboard").classList.add("hidden");
+
+        if (name === "landing") {
+          document.getElementById("page-landing").classList.remove("hidden");
+        } else if (name === "auth") {
+          document.getElementById("page-auth").classList.remove("hidden");
+          refreshAuthPanelMode();
+        } else if (name === "dashboard") {
+          document.getElementById("page-dashboard").classList.remove("hidden");
+          initDashboard();
+        }
+      }
+
+      document.getElementById("btn-get-started").addEventListener("click", function () {
+        clearAuthError();
+        isLoginMode = false;
+        showView("auth");
+      });
+
+      document.getElementById("btn-landing-login").addEventListener("click", function () {
+        clearAuthError();
+        isLoginMode = true;
+        showView("auth");
+      });
+
+      document.getElementById("btn-back-landing").addEventListener("click", function () {
+        clearAuthError();
+        showView("landing");
+      });
+
+      document.getElementById("btn-toggle-auth-mode").addEventListener("click", function () {
+        isLoginMode = !isLoginMode;
+        refreshAuthPanelMode();
+      });
+
+      document.getElementById("btn-top-switch").addEventListener("click", function () {
+        isLoginMode = !isLoginMode;
+        refreshAuthPanelMode();
+      });
+
+      function setAuthError(msg) {
+        var box = document.getElementById("auth-error-box");
+        box.textContent = msg;
+        box.classList.remove("hidden");
+      }
+      function clearAuthError() {
+        document.getElementById("auth-error-box").classList.add("hidden");
+      }
+
+      function refreshAuthPanelMode() {
+        clearAuthError();
+        var titleMode = document.getElementById("auth-title-mode");
+        var subMode = document.getElementById("auth-subtitle-mode");
+        var statusBadge = document.getElementById("auth-status-badge");
+        var paperSection = document.getElementById("paper-selector-section");
+        var submitBtn = document.getElementById("btn-auth-submit");
+        var topSwitchBtn = document.getElementById("btn-top-switch");
+        var togglePromptBtn = document.getElementById("btn-toggle-auth-mode");
+
+        if (isLoginMode) {
+          titleMode.textContent = "Welcome Back";
+          subMode.textContent = "Log in with your existing email and password";
+          statusBadge.textContent = "Returning Account";
+          paperSection.classList.add("hidden");
+          submitBtn.innerHTML = "Log In &rarr;";
+          topSwitchBtn.textContent = "Sign Up";
+          togglePromptBtn.innerHTML = 'First time here? <span style="color: var(--neon-bright); margin-left: 4px; text-decoration: underline;">Create an account</span>';
+        } else {
+          titleMode.textContent = "Create Your Account";
+          subMode.textContent = "Enter details & choose your exact papers";
+          statusBadge.textContent = "New Account";
+          paperSection.classList.remove("hidden");
+          submitBtn.innerHTML = "Create Account &rarr;";
+          topSwitchBtn.textContent = "Log In";
+          togglePromptBtn.innerHTML = 'Already have an account? <span style="color: var(--neon-bright); margin-left: 4px; text-decoration: underline;">Log in</span>';
+        }
+      }
+
+      /* =========================================================
+         5. SUPABASE AUTHENTICATION SUBMISSION
+         ========================================================= */
+      document.getElementById("form-auth-main").addEventListener("submit", async function (e) {
+        e.preventDefault();
+        clearAuthError();
+
+        var email = document.getElementById("input-email").value.trim().toLowerCase();
+        var pass = document.getElementById("input-password").value;
+        var submitBtn = document.getElementById("btn-auth-submit");
+        var origBtnHtml = submitBtn.innerHTML;
+        submitBtn.disabled = true;
+        submitBtn.textContent = "Please wait...";
+
+        try {
+          if (isLoginMode) {
+            var loginRes = await sb.auth.signInWithPassword({ email: email, password: pass });
+            if (loginRes.error) {
+              setAuthError(loginRes.error.message);
+              return;
+            }
+            var userId = loginRes.data.user.id;
+            var meta = loginRes.data.user.user_metadata || {};
+            var row = null;
+
+            var profRes = await sb.from("user_data").select("*").eq("email", email).maybeSingle();
+            if (!profRes.error && profRes.data) {
+              row = profRes.data;
+            }
+
+            currentUser = {
+              id: userId,
+              email: (row && row.email) || loginRes.data.user.email || email,
+              password: (row && row.password) || pass,
+              papers: (row && row.papers) || meta.papers || [],
+              examDates: (row && row.exam_dates) || meta.exam_dates || {},
+              tasks: (row && row.tasks) || meta.tasks || {},
+              checklist: (row && row.checklist) || meta.checklist || {}
+            };
+          } else {
+            var chosenPaperIds = Object.keys(signupSelectedPapers);
+            if (chosenPaperIds.length === 0) {
+              setAuthError("Please select at least one paper to continue.");
+              return;
+            }
+
+            var signRes = await sb.auth.signUp({
+              email: email,
+              password: pass,
+              options: {
+                data: {
+                  papers: chosenPaperIds,
+                  exam_dates: {},
+                  tasks: {},
+                  checklist: {}
+                }
+              }
+            });
+            if (signRes.error) {
+              setAuthError(signRes.error.message);
+              return;
+            }
+            if (!signRes.data.user) {
+              setAuthError("Account created! Please check your email or disable Confirm Email in Supabase Auth settings.");
+              return;
+            }
+
+            var newUserId = signRes.data.user.id;
+            currentUser = {
+              id: newUserId,
+              email: email,
+              password: pass,
+              papers: chosenPaperIds,
+              examDates: {},
+              tasks: {},
+              checklist: {}
+            };
+
+            // Insert directly into your public.user_data table
+            var dbInsert = await sb.from("user_data").upsert({
+              email: email,
+              password: pass,
+              papers: chosenPaperIds
+            }, { onConflict: "email" });
+
+            if (dbInsert.error) {
+              setAuthError("Table 'user_data' insert blocked: " + dbInsert.error.message);
+              return;
+            }
+          }
+
+          notify("Saved to user_data: " + currentUser.email);
+          showView("dashboard");
+        } catch (err) {
+          setAuthError(err.message || "Authentication failed.");
+        } finally {
+          submitBtn.disabled = false;
+          submitBtn.innerHTML = origBtnHtml;
+        }
+      });
+
+      /* =========================================================
+         6. DASHBOARD & SUPABASE SYNC LOGIC
+         ========================================================= */
+      function initDashboard() {
+        if (!currentUser) {
+          showView("auth");
+          return;
+        }
+        document.getElementById("dash-user-email").textContent = currentUser.email;
+
+        if (!activeSyllabusTab || currentUser.papers.indexOf(activeSyllabusTab) === -1) {
+          activeSyllabusTab = currentUser.papers[0] || null;
+        }
+
+        switchTab("timetable");
+        renderTimetableSection();
+        renderCalendarSection();
+        renderSyllabusSection();
+      }
+
+      function switchTab(tabName) {
+        document.querySelectorAll(".nav-pill").forEach(function (b) {
+          if (b.getAttribute("data-tab") === tabName) b.classList.add("active");
+          else b.classList.remove("active");
+        });
+        document.getElementById("sec-timetable").classList.toggle("hidden", tabName !== "timetable");
+        document.getElementById("sec-calendar").classList.toggle("hidden", tabName !== "calendar");
+        document.getElementById("sec-syllabus").classList.toggle("hidden", tabName !== "syllabus");
+      }
+
+      document.querySelectorAll(".nav-pill").forEach(function (btn) {
+        btn.addEventListener("click", function () {
+          switchTab(btn.getAttribute("data-tab"));
+        });
+      });
+
+      function saveCurrentUser() {
+        if (!currentUser || !currentUser.id) return;
+        if (saveTimeout) clearTimeout(saveTimeout);
+        saveTimeout = setTimeout(async function () {
+          // Save into Supabase Auth user_metadata
+          var authUpdate = await sb.auth.updateUser({
+            data: {
+              papers: currentUser.papers,
+              exam_dates: currentUser.examDates,
+              tasks: currentUser.tasks,
+              checklist: currentUser.checklist
+            }
+          });
+          if (authUpdate.error) {
+            notify("Sync error: " + authUpdate.error.message);
+          }
+
+          // Update your public.user_data table directly
+          var dbUpsert = await sb.from("user_data").upsert({
+            email: currentUser.email,
+            password: currentUser.password || "",
+            papers: currentUser.papers
+          }, { onConflict: "email" });
+
+          if (dbUpsert.error) {
+            notify("user_data sync error: " + dbUpsert.error.message);
+          }
+        }, 250);
+      }
+
+      /* --- SECTION 1: TIMETABLE & LIVE COUNTDOWN (AUTO-SORTED) --- */
+      function computeCountdown(dateStr) {
+        if (!dateStr) return null;
+        var now = new Date();
+        var todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+        var p = dateStr.split("-");
+        var examDateMidnight = new Date(Number(p[0]), Number(p[1]) - 1, Number(p[2])).getTime();
+        var examTimestamp = new Date(Number(p[0]), Number(p[1]) - 1, Number(p[2]), 9, 0, 0).getTime();
+
+        var daysDiff = Math.round((examDateMidnight - todayStart) / 86400000);
+        var diffMs = examTimestamp - now.getTime();
+
+        if (daysDiff < 0) return { cls: "done", sortKey: 999999999 + Math.abs(daysDiff), text: "Exam Passed" };
+        if (daysDiff === 0) {
+          if (diffMs > 0) {
+            var hrs = String(Math.floor(diffMs / 3600000)).padStart(2, "0");
+            var mins = String(Math.floor((diffMs / 60000) % 60)).padStart(2, "0");
+            var secs = String(Math.floor((diffMs / 1000) % 60)).padStart(2, "0");
+            return { cls: "today", sortKey: 0, text: "Today \u2022 " + hrs + "h " + mins + "m " + secs + "s" };
+          }
+          return { cls: "today", sortKey: 0, text: "Today (Exam Time)" };
+        }
+
+        var rem = Math.max(0, diffMs);
+        var dRem = Math.floor(rem / 86400000);
+        var hRem = String(Math.floor((rem / 3600000) % 24)).padStart(2, "0");
+        var mRem = String(Math.floor((rem / 60000) % 60)).padStart(2, "0");
+        var sRem = String(Math.floor((rem / 1000) % 60)).padStart(2, "0");
+
+        return {
+          cls: daysDiff <= 14 ? "urgent" : "normal",
+          sortKey: diffMs > 0 ? diffMs : daysDiff * 86400000,
+          text: dRem + "d " + hRem + "h " + mRem + "m " + sRem + "s"
+        };
+      }
+
+      function renderTimetableSection() {
+        var container = document.getElementById("timetable-rows");
+        var papers = currentUser.papers || [];
+        document.getElementById("tt-total-badge").textContent = papers.length + (papers.length === 1 ? " paper" : " papers");
+
+        if (papers.length === 0) {
+          container.innerHTML = "<div class='glass' style='padding:28px; text-align:center; color:var(--text-dim); font-size:0.88rem;'>No papers chosen. Click 'Papers' above to add some.</div>";
+          return;
+        }
+
+        // Auto-sort papers from lowest days left to highest days left
+        var sorted = papers.slice().sort(function (a, b) {
+          var dateA = currentUser.examDates[a];
+          var dateB = currentUser.examDates[b];
+          if (!dateA && !dateB) return 0;
+          if (!dateA) return 1; // unset dates go last
+          if (!dateB) return -1;
+          return computeCountdown(dateA).sortKey - computeCountdown(dateB).sortKey;
+        });
+
+        container.innerHTML = "";
+
+        sorted.forEach(function (pid) {
+          var meta = PAPER_MAP[pid];
+          if (!meta) return;
+
+          var dateVal = currentUser.examDates[pid] || "";
+          var cd = computeCountdown(dateVal);
+
+          var row = document.createElement("div");
+          row.className = "glass tt-row";
+
+          var info = document.createElement("div");
+          info.className = "tt-info";
+          info.innerHTML =
+            "<span class='tt-code mono'>" + meta.code + " \u00b7 " + meta.short + "</span>" +
+            "<div><div class='tt-name'>" + meta.name + "</div><div class='tt-sub'>" + meta.subject + " \u2014 " + meta.subtitle + "</div></div>";
+
+          var controls = document.createElement("div");
+          controls.className = "tt-controls";
+
+          var dateGroup = document.createElement("div");
+          dateGroup.className = "date-group";
+
+          var existingParts = dateVal ? dateVal.split("-") : ["", "", ""];
+          var curYear = existingParts[0] || "";
+          var curMonth = existingParts[1] || "";
+          var curDay = existingParts[2] || "";
+
+          var daySel = document.createElement("select");
+          daySel.className = "date-select";
+          daySel.innerHTML = "<option value=''>Day</option>";
+          for (var dIdx = 1; dIdx <= 31; dIdx++) {
+            var dStr = String(dIdx).padStart(2, "0");
+            daySel.innerHTML += "<option value='" + dStr + "'" + (curDay === dStr ? " selected" : "") + ">" + dStr + "</option>";
+          }
+
+          var monthSel = document.createElement("select");
+          monthSel.className = "date-select";
+          var shortMonths = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+          monthSel.innerHTML = "<option value=''>Month</option>";
+          for (var mIdx = 0; mIdx < 12; mIdx++) {
+            var mStr = String(mIdx + 1).padStart(2, "0");
+            monthSel.innerHTML += "<option value='" + mStr + "'" + (curMonth === mStr ? " selected" : "") + ">" + shortMonths[mIdx] + "</option>";
+          }
+
+          var yearInp = document.createElement("input");
+          yearInp.type = "number";
+          yearInp.className = "date-year-input";
+          yearInp.placeholder = "Year";
+          yearInp.min = "2024";
+          yearInp.max = "2035";
+          yearInp.value = curYear;
+
+          function syncExamDate() {
+            var yVal = yearInp.value.trim();
+            var mVal = monthSel.value;
+            var dVal = daySel.value;
+            if (yVal.length === 4 && mVal && dVal) {
+              var maxDaysInMonth = new Date(Number(yVal), Number(mVal), 0).getDate();
+              var clampedDay = String(Math.min(Number(dVal), maxDaysInMonth)).padStart(2, "0");
+              currentUser.examDates[pid] = yVal + "-" + mVal + "-" + clampedDay;
+              saveCurrentUser();
+              notify("Exam date saved");
+              renderTimetableSection();
+            }
+          }
+
+          daySel.addEventListener("change", function () {
+            if (!yearInp.value) yearInp.value = String(new Date().getFullYear());
+            syncExamDate();
+          });
+          monthSel.addEventListener("change", function () {
+            if (!yearInp.value) yearInp.value = String(new Date().getFullYear());
+            syncExamDate();
+          });
+          yearInp.addEventListener("change", syncExamDate);
+          yearInp.addEventListener("input", function () {
+            if (yearInp.value.trim().length === 4) syncExamDate();
+          });
+
+          dateGroup.appendChild(daySel);
+          dateGroup.appendChild(monthSel);
+          dateGroup.appendChild(yearInp);
+
+          if (dateVal) {
+            var clrBtn = document.createElement("button");
+            clrBtn.type = "button";
+            clrBtn.className = "date-clear-btn";
+            clrBtn.title = "Clear date";
+            clrBtn.innerHTML = "&times;";
+            clrBtn.addEventListener("click", function () {
+              delete currentUser.examDates[pid];
+              saveCurrentUser();
+              notify("Exam date cleared");
+              renderTimetableSection();
+            });
+            dateGroup.appendChild(clrBtn);
+          }
+
+          var badge = document.createElement("div");
+          badge.className = "cd-badge mono";
+          badge.setAttribute("data-paper-id", pid);
+
+          if (!cd) {
+            badge.classList.add("unset");
+            badge.textContent = "Set exam date";
+          } else {
+            badge.classList.add(cd.cls);
+            badge.textContent = cd.text;
+          }
+
+          controls.appendChild(dateGroup);
+          controls.appendChild(badge);
+          row.appendChild(info);
+          row.appendChild(controls);
+          container.appendChild(row);
+        });
+
+        // Live Ticker
+        if (countdownInterval) clearInterval(countdownInterval);
+        countdownInterval = setInterval(function () {
+          document.querySelectorAll(".cd-badge[data-paper-id]").forEach(function (el) {
+            var id = el.getAttribute("data-paper-id");
+            if (!currentUser.examDates[id]) return;
+            var res = computeCountdown(currentUser.examDates[id]);
+            if (res) el.textContent = res.text;
+          });
+        }, 1000);
+      }
+
+      /* --- SECTION 2: FLEXIBLE CALENDAR & TASKS --- */
+      var MONTH_NAMES = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+
+      function renderCalendarSection() {
+        document.getElementById("cal-month-label").textContent = MONTH_NAMES[calView.month] + " " + calView.year;
+        var grid = document.getElementById("cal-days-grid");
+        grid.innerHTML = "";
+
+        var firstDayIdx = new Date(calView.year, calView.month, 1).getDay();
+        var totalDays = new Date(calView.year, calView.month + 1, 0).getDate();
+        var todayStr = toISOString(new Date());
+
+        for (var i = 0; i < firstDayIdx; i++) {
+          grid.appendChild(document.createElement("div"));
+        }
+
+        for (var d = 1; d <= totalDays; d++) {
+          (function (dayNum) {
+            var isoDate = toISOString(new Date(calView.year, calView.month, dayNum));
+            var dayTasks = currentUser.tasks[isoDate] || [];
+
+            var cell = document.createElement("button");
+            cell.type = "button";
+            cell.className = "cal-cell mono";
+            if (isoDate === todayStr) cell.classList.add("today");
+            if (isoDate === calView.selectedDate) cell.classList.add("selected");
+
+            var numSpan = document.createElement("span");
+            numSpan.textContent = dayNum;
+            cell.appendChild(numSpan);
+
+            if (dayTasks.length > 0) {
+              var dot = document.createElement("span");
+              dot.className = "dot-ind" + (dayTasks.every(function (t) { return t.done; }) ? " complete" : "");
+              cell.appendChild(dot);
+            }
+
+            cell.addEventListener("click", function () {
+              calView.selectedDate = isoDate;
+              renderCalendarSection();
+            });
+            grid.appendChild(cell);
+          })(d);
+        }
+        renderTaskStack();
+      }
+
+      function renderTaskStack() {
+        var todayStr = toISOString(new Date());
+        var tag = "SCHEDULED";
+        if (calView.selectedDate === todayStr) tag = "TODAY";
+        else if (calView.selectedDate < todayStr) tag = "PAST DAY";
+        else tag = "FUTURE DAY";
+
+        document.getElementById("cal-day-rel").textContent = tag;
+        var parts = calView.selectedDate.split("-");
+        var dObj = new Date(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2]));
+        document.getElementById("cal-selected-heading").textContent = dObj.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric", year: "numeric" });
+
+        var list = currentUser.tasks[calView.selectedDate] || [];
+        var completedCount = list.filter(function (t) { return t.done; }).length;
+        document.getElementById("cal-day-stats").textContent = completedCount + "/" + list.length;
+
+        var stack = document.getElementById("cal-tasks-list");
+        stack.innerHTML = "";
+
+        if (list.length === 0) {
+          stack.innerHTML = "<div style='padding:24px; text-align:center; color:var(--text-faint); font-size:0.8rem;'>No tasks for this day.</div>";
+          return;
+        }
+
+        list.forEach(function (task) {
+          var item = document.createElement("div");
+          item.className = "t-item";
+
+          var label = document.createElement("label");
+          label.className = "t-label";
+
+          var cb = document.createElement("input");
+          cb.type = "checkbox";
+          cb.className = "chk";
+          cb.checked = !!task.done;
+          cb.addEventListener("change", function () {
+            task.done = cb.checked;
+            saveCurrentUser();
+            renderCalendarSection();
+          });
+
+          var span = document.createElement("span");
+          span.className = task.done ? "done" : "";
+          span.textContent = task.text;
+
+          label.appendChild(cb);
+          label.appendChild(span);
+
+          var delBtn = document.createElement("button");
+          delBtn.type = "button";
+          delBtn.className = "t-del";
+          delBtn.innerHTML = "&times;";
+          delBtn.addEventListener("click", function () {
+            currentUser.tasks[calView.selectedDate] = currentUser.tasks[calView.selectedDate].filter(function (t) { return t.id !== task.id; });
+            if (currentUser.tasks[calView.selectedDate].length === 0) delete currentUser.tasks[calView.selectedDate];
+            saveCurrentUser();
+            renderCalendarSection();
+          });
+
+          item.appendChild(label);
+          item.appendChild(delBtn);
+          stack.appendChild(item);
+        });
+      }
+
+      document.getElementById("form-add-task").addEventListener("submit", function (e) {
+        e.preventDefault();
+        var input = document.getElementById("input-new-task");
+        var val = input.value.trim();
+        if (!val) return;
+
+        var taskId = "t_" + Date.now() + "_" + Math.random().toString(36).slice(2, 6);
+        if (!currentUser.tasks[calView.selectedDate]) currentUser.tasks[calView.selectedDate] = [];
+        currentUser.tasks[calView.selectedDate].push({ id: taskId, text: val, done: false });
+        input.value = "";
+
+        saveCurrentUser();
+        renderCalendarSection();
+        notify("Task added");
+      });
+
+      document.getElementById("btn-cal-prev").addEventListener("click", function () {
+        calView.month--;
+        if (calView.month < 0) { calView.month = 11; calView.year--; }
+        renderCalendarSection();
+      });
+      document.getElementById("btn-cal-next").addEventListener("click", function () {
+        calView.month++;
+        if (calView.month > 11) { calView.month = 0; calView.year++; }
+        renderCalendarSection();
+      });
+      document.getElementById("btn-cal-today").addEventListener("click", function () {
+        var now = new Date();
+        calView.year = now.getFullYear();
+        calView.month = now.getMonth();
+        calView.selectedDate = toISOString(now);
+        renderCalendarSection();
+      });
+
+      /* --- SECTION 3: SYLLABUS CHECKLIST --- */
+      function getPaperCompletionPct(meta) {
+        var totalChecks = meta.chapters.length * 4; // Notes, Lecture, Topical PP, Yearly PP
+        if (totalChecks === 0) return 0;
+        var completed = 0;
+        meta.chapters.forEach(function (_, cIdx) {
+          var rec = currentUser.checklist[meta.id + "::" + cIdx] || {};
+          if (rec.notes) completed++;
+          if (rec.lecture) completed++;
+          if (rec.topical) completed++;
+          if (rec.yearly) completed++;
+        });
+        return Math.round((completed / totalChecks) * 100);
+      }
+
+      function renderSyllabusSection() {
+        var papers = currentUser.papers || [];
+        var tabBar = document.getElementById("syllabus-paper-tabs");
+        tabBar.innerHTML = "";
+
+        if (papers.length === 0) {
+          document.getElementById("syllabus-cards-container").innerHTML = "<div class='glass' style='padding:28px; text-align:center; color:var(--text-dim); font-size:0.88rem;'>No papers chosen.</div>";
+          return;
+        }
+
+        if (!activeSyllabusTab || papers.indexOf(activeSyllabusTab) === -1) {
+          activeSyllabusTab = papers[0];
+        }
+
+        papers.forEach(function (pid) {
+          var meta = PAPER_MAP[pid];
+          if (!meta) return;
+
+          var pct = getPaperCompletionPct(meta);
+          var tab = document.createElement("button");
+          tab.type = "button";
+          tab.className = "paper-tab" + (pid === activeSyllabusTab ? " active" : "");
+          tab.innerHTML = "<span>" + meta.name + "</span><span class='tab-pct mono' data-pct-pid='" + pid + "'>" + pct + "%</span>";
+
+          tab.addEventListener("click", function () {
+            activeSyllabusTab = pid;
+            renderSyllabusSection();
+          });
+          tabBar.appendChild(tab);
+        });
+
+        renderSyllabusTableForPaper(activeSyllabusTab);
+      }
+
+      function renderSyllabusTableForPaper(pid) {
+        var container = document.getElementById("syllabus-cards-container");
+        container.innerHTML = "";
+
+        var meta = PAPER_MAP[pid];
+        if (!meta) return;
+
+        var pct = getPaperCompletionPct(meta);
+        var card = document.createElement("div");
+        card.className = "glass syl-card";
+
+        var top = document.createElement("div");
+        top.className = "syl-top";
+        top.innerHTML =
+          "<div style='display:flex; align-items:center; gap:12px;'>" +
+            "<span class='tt-code mono'>" + meta.code + " \u00b7 " + meta.short + "</span>" +
+            "<div><div style='font-weight:600; font-size:0.98rem; color:#ffffff;'>" + meta.name + "</div><div style='font-size:0.76rem; color:var(--text-dim);'>" + meta.subject + " \u2014 " + meta.subtitle + "</div></div>" +
+          "</div>" +
+          "<div class='prog-box'>" +
+            "<div class='prog-bar'><div id='syl-prog-fill' class='prog-fill' style='width:" + pct + "%;'></div></div>" +
+            "<span id='syl-prog-txt' class='mono' style='font-size:0.76rem; font-weight:600; color:var(--neon-bright);'>" + pct + "%</span>" +
+          "</div>";
+
+        var tblWrap = document.createElement("div");
+        tblWrap.className = "tbl-wrap";
+
+        var table = document.createElement("table");
+        table.className = "syl-tbl";
+        table.innerHTML =
+          "<thead><tr class='mono'>" +
+            "<th style='width:28%;'>Chapter</th>" +
+            "<th class='c-center' style='width:7%;'>Notes</th>" +
+            "<th class='c-center' style='width:7%;'>Lecture</th>" +
+            "<th class='c-center' style='width:7%;'>Topical PP</th>" +
+            "<th class='c-center' style='width:7%;'>Yearly PP</th>" +
+            "<th style='width:22%;'>Mistake Log</th>" +
+            "<th style='width:22%;'>Comment Box</th>" +
+          "</tr></thead>";
+
+        var tbody = document.createElement("tbody");
+
+        meta.chapters.forEach(function (chap, idx) {
+          var key = pid + "::" + idx;
+          var rec = currentUser.checklist[key] || { notes: false, lecture: false, topical: false, yearly: false, mistake: "", comment: "" };
+
+          var tr = document.createElement("tr");
+
+          var tdChap = document.createElement("td");
+          tdChap.style.fontWeight = "500";
+          tdChap.style.color = "var(--text-main)";
+          tdChap.textContent = chap;
+          tr.appendChild(tdChap);
+
+          // Checkboxes for Notes, Lecture, Topical, Yearly
+          ["notes", "lecture", "topical", "yearly"].forEach(function (prop) {
+            var td = document.createElement("td");
+            td.className = "c-center";
+            var cb = document.createElement("input");
+            cb.type = "checkbox";
+            cb.className = "chk";
+            cb.checked = !!rec[prop];
+            cb.addEventListener("change", function () {
+              if (!currentUser.checklist[key]) currentUser.checklist[key] = { notes: false, lecture: false, topical: false, yearly: false, mistake: "", comment: "" };
+              currentUser.checklist[key][prop] = cb.checked;
+              saveCurrentUser();
+
+              var newPct = getPaperCompletionPct(meta);
+              document.getElementById("syl-prog-fill").style.width = newPct + "%";
+              document.getElementById("syl-prog-txt").textContent = newPct + "%";
+              var badgeTag = document.querySelector("[data-pct-pid='" + pid + "']");
+              if (badgeTag) badgeTag.textContent = newPct + "%";
+            });
+            td.appendChild(cb);
+            tr.appendChild(td);
+          });
+
+          // Mistake Log Input
+          var tdMistake = document.createElement("td");
+          var inM = document.createElement("input");
+          inM.type = "text";
+          inM.className = "mini-input";
+          inM.placeholder = "Key errors...";
+          inM.value = rec.mistake || "";
+          inM.addEventListener("input", function () {
+            if (!currentUser.checklist[key]) currentUser.checklist[key] = { notes: false, lecture: false, topical: false, yearly: false, mistake: "", comment: "" };
+            currentUser.checklist[key].mistake = inM.value;
+            saveCurrentUser();
+          });
+          tdMistake.appendChild(inM);
+          tr.appendChild(tdMistake);
+
+          // Comment Box Input
+          var tdComment = document.createElement("td");
+          var inC = document.createElement("input");
+          inC.type = "text";
+          inC.className = "mini-input";
+          inC.placeholder = "Notes or thoughts...";
+          inC.value = rec.comment || "";
+          inC.addEventListener("input", function () {
+            if (!currentUser.checklist[key]) currentUser.checklist[key] = { notes: false, lecture: false, topical: false, yearly: false, mistake: "", comment: "" };
+            currentUser.checklist[key].comment = inC.value;
+            saveCurrentUser();
+          });
+          tdComment.appendChild(inC);
+          tr.appendChild(tdComment);
+
+          tbody.appendChild(tr);
+        });
+
+        table.appendChild(tbody);
+        tblWrap.appendChild(table);
+        card.appendChild(top);
+        card.appendChild(tblWrap);
+        container.appendChild(card);
+      }
+
+      /* =========================================================
+         7. MANAGE PAPERS MODAL
+         ========================================================= */
+      var modalPapersSet = {};
+      var modalEl = document.getElementById("modal-manage");
+
+      function renderModalSubjectsGrid() {
+        var grid = document.getElementById("modal-subjects-grid");
+        grid.innerHTML = "";
+
+        CAIE_SUBJECTS.forEach(function (subj) {
+          var card = document.createElement("div");
+          card.className = "subj-card";
+
+          var top = document.createElement("div");
+          top.className = "subj-card-head";
+          top.innerHTML = "<span>" + subj.subject + "</span><span class='tt-code mono'>" + subj.code + "</span>";
+          card.appendChild(top);
+
+          var chips = document.createElement("div");
+          chips.className = "paper-chips";
+
+          subj.papers.forEach(function (paper) {
+            var isSel = !!modalPapersSet[paper.id];
+            var chip = document.createElement("button");
+            chip.type = "button";
+            chip.className = "p-chip" + (isSel ? " active" : "");
+            chip.innerHTML = "<strong class='mono' style='color:#fff;'>" + paper.short + "</strong><span>" + paper.subtitle + "</span>";
+
+            chip.addEventListener("click", function () {
+              if (modalPapersSet[paper.id]) {
+                delete modalPapersSet[paper.id];
+                chip.classList.remove("active");
+              } else {
+                modalPapersSet[paper.id] = true;
+                chip.classList.add("active");
+              }
+            });
+            chips.appendChild(chip);
+          });
+
+          card.appendChild(chips);
+          grid.appendChild(card);
+        });
+      }
+
+      document.getElementById("btn-manage-papers").addEventListener("click", function () {
+        modalPapersSet = {};
+        (currentUser.papers || []).forEach(function (pid) { modalPapersSet[pid] = true; });
+        renderModalSubjectsGrid();
+        modalEl.classList.remove("hidden");
+      });
+
+      document.getElementById("btn-close-modal").addEventListener("click", function () { modalEl.classList.add("hidden"); });
+      document.getElementById("btn-cancel-modal").addEventListener("click", function () { modalEl.classList.add("hidden"); });
+
+      document.getElementById("btn-save-modal").addEventListener("click", function () {
+        var newPapers = Object.keys(modalPapersSet);
+        if (newPapers.length === 0) {
+          notify("Please select at least one paper");
+          return;
+        }
+        currentUser.papers = newPapers;
+        saveCurrentUser();
+
+        if (currentUser.papers.indexOf(activeSyllabusTab) === -1) {
+          activeSyllabusTab = currentUser.papers[0];
+        }
+
+        modalEl.classList.add("hidden");
+        notify("Papers updated successfully");
+        renderTimetableSection();
+        renderSyllabusSection();
+      });
+
+      /* =========================================================
+         8. SESSION & APP BOOT
+         ========================================================= */
+      document.getElementById("btn-logout").addEventListener("click", async function () {
+        await sb.auth.signOut();
+        currentUser = null;
+        if (countdownInterval) clearInterval(countdownInterval);
+        notify("Logged out successfully");
+        showView("auth");
+      });
+
+      // Check for active Supabase session on load
+      (async function bootApp() {
+        renderSubjectFilterChips();
+        renderSignupPapersGrid();
+
+        var sessionRes = await sb.auth.getSession();
+        var session = sessionRes.data && sessionRes.data.session;
+        if (session && session.user) {
+          var meta = session.user.user_metadata || {};
+          var row = null;
+          var profRes = await sb.from("user_data").select("*").eq("email", session.user.email).maybeSingle();
+          if (!profRes.error && profRes.data) {
+            row = profRes.data;
+          }
+          currentUser = {
+            id: session.user.id,
+            email: (row && row.email) || session.user.email,
+            password: (row && row.password) || "",
+            papers: (row && row.papers) || meta.papers || [],
+            examDates: (row && row.exam_dates) || meta.exam_dates || {},
+            tasks: (row && row.tasks) || meta.tasks || {},
+            checklist: (row && row.checklist) || meta.checklist || {}
+          };
+          showView("dashboard");
+        } else {
+          isLoginMode = false;
+          showView("landing");
+        }
+      })();
+    })();
+  </script>
+</body>
+</html>
